@@ -2,10 +2,12 @@
 /* eslint-disable no-console */
 import { ErrorRequestHandler } from 'express'
 import config from '../../config'
-import { IGenericMessage } from '../../interfaces/error'
+import { IGenericErrorMessage } from '../../interfaces/error'
 import handleValidationError from '../../error-handler/handleValidationError'
 import ApiError from '../../error-handler/ApiError'
 import { errorlogger } from '../../shared/logger'
+import { ZodError } from 'zod'
+import handleZodError from '../../error-handler/handleZodError'
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   config.env === 'development'
@@ -14,10 +16,15 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
 
   let statusCode = 500
   let message = 'Something went wrong !'
-  let errorMessages: IGenericMessage[] = []
+  let errorMessages: IGenericErrorMessage[] = []
 
   if (error?.name === 'ValidationError') {
     const simplifiedError = handleValidationError(error)
+    statusCode = simplifiedError.statusCode
+    message = simplifiedError.message
+    errorMessages = simplifiedError.errorMessages
+  } else if (error instanceof ZodError) {
+    const simplifiedError = handleZodError(error)
     statusCode = simplifiedError.statusCode
     message = simplifiedError.message
     errorMessages = simplifiedError.errorMessages
