@@ -10,6 +10,16 @@ router.post(
   SemesterController.createSemester
 )
 
+router.get('/:id', SemesterController.getSingleSemester)
+
+router.patch(
+  '/:id',
+  validateRequest(SemesterValidation.updateSemesterZodSchema),
+  SemesterController.updateSemester
+)
+
+router.delete('/:id', SemesterController.deleteSemester)
+
 router.get('/', SemesterController.getAllSemesters)
 
 export const SemesterRoutes = router
