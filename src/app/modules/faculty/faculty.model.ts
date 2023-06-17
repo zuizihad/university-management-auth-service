@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { IFaculty, FacultyModel } from './faculty.interface'
 
-const facultySchema = new Schema(
+const facultySchema = new Schema<IFaculty>(
   {
     title: {
       type: String,
@@ -12,6 +12,9 @@ const facultySchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
   }
 )
 
