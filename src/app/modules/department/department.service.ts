@@ -56,7 +56,7 @@ const getAllDepartments = async (
     .skip(skip)
     .limit(limit)
 
-  const total = await Department.countDocuments()
+  const total = await Department.countDocuments(whereConditions)
 
   return {
     meta: {

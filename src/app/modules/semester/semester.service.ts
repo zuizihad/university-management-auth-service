@@ -82,7 +82,7 @@ const getSemesters = async (
     .skip(skip)
     .limit(limit)
 
-  const total = await Semester.countDocuments()
+  const total = await Semester.countDocuments(whereConditions)
 
   return {
     meta: {
