@@ -50,8 +50,8 @@ const getAllFaculties = async (
     andConditions.length > 0 ? { $and: andConditions } : {}
 
   const result = await UserFaculty.find(whereConditions)
-    .populate('academicDepartment')
-    .populate('academicFaculty')
+    .populate('department')
+    .populate('faculty')
     .sort(sortConditions)
     .skip(skip)
     .limit(limit)
