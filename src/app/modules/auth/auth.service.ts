@@ -2,13 +2,15 @@ import httpStatus from 'http-status'
 import ApiError from '../../../error-handler/ApiError'
 import { User } from '../user/user.model'
 import {
+  IChangePassword,
   ILoginUser,
   ILoginUserResponse,
   IRefreshTokenResponse,
 } from './auth.interface'
-import { Secret } from 'jsonwebtoken'
+import { JwtPayload, Secret } from 'jsonwebtoken'
 import config from '../../../config'
 import { JwtHelpers } from '../../../helpers/jwtHelpers'
+import bcrypt from 'bcrypt'
 
 const login = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const { id, password } = payload
@@ -17,8 +19,11 @@ const login = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const isExist = await user.isUserExist(id)
 
   if (!isExist) throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!')
-
-  if (!user.isPasswordMatched(password, isExist.password))
+  const isPasswordMatched = await user.isPasswordMatched(
+    password,
+    isExist.password
+  )
+  if (!isPasswordMatched)
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid credentials')
 
   // create access token for login user
@@ -71,7 +76,38 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   }
 }
 
+const changePassword = async (
+  data: JwtPayload | null,
+  payload: IChangePassword
+): Promise<void> => {
+  const { oldPassword, newPassword } = payload
+  const user = new User()
+  const isExist = await user.isUserExist(data.userId)
+
+  if (!isExist) throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!')
+  const isPasswordMatched = await user.isPasswordMatched(
+    oldPassword,
+    isExist.password
+  )
+  if (!isPasswordMatched)
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid old password')
+
+  // hash password
+  const newHashPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.bcrypt_salt_rounds)
+  )
+  // update password
+  const updatedData = {
+    password: newHashPassword,
+    needsPasswordChange: false,
+    passwordChangeAt: new Date(),
+  }
+  await User.findOneAndUpdate({ id: data.userId }, updatedData)
+}
+
 export const AuthService = {
   login,
   refreshToken,
+  changePassword,
 }
