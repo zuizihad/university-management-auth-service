@@ -16,6 +16,7 @@ import { IUserFaculty } from '../user-faculty/user-faculty.interface'
 import { UserFaculty } from '../user-faculty/user-faculty.model'
 import { IAdmin } from '../admin/admin.interface'
 import { Admin } from '../admin/admin.model'
+import bcrypt from 'bcrypt'
 
 const createStudent = async (
   student: IUserStudent,
@@ -25,6 +26,12 @@ const createStudent = async (
   if (!user.password) {
     user.password = config.default_student_pass as string
   }
+  // password hash
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds)
+  )
+
   //set user role
   user.role = 'student'
 
