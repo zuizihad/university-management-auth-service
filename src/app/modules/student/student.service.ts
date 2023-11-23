@@ -4,6 +4,7 @@ import { paginationHelpers } from '../../../helpers/paginationHelper'
 import { SortOrder } from 'mongoose'
 import { IStudentFilters, IUserStudent } from './student.interface'
 import { Student } from './student.model'
+import { User } from '../user/user.model';
 import { studentSearchableFields } from './student.constant'
 import ApiError from '../../../error-handler/ApiError'
 import httpStatus from 'http-status'
@@ -121,6 +122,35 @@ const deleteStudent = async (id: string): Promise<IUserStudent | null> => {
     .populate('semester')
   return result
 }
+
+const deleteStudent = async (id: string): Promise<IUserStudent | null> => {
+  // check if the student is exist
+  const isExist = await Student.findOne({ id });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Student not found !');
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    //delete student first
+    const student = await Student.findOneAndDelete({ id }, { session });
+    if (!student) {
+      throw new ApiError(404, 'Failed to delete student');
+    }
+    //delete user
+    await User.deleteOne({ id });
+    session.commitTransaction();
+    session.endSession();
+
+    return student;
+  } catch (error) {
+    session.abortTransaction();
+    throw error;
+  }
+};
 
 export const StudentService = {
   getAllStudents,
