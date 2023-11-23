@@ -1,10 +1,10 @@
 import { IPaginateOptions } from '../../../interfaces/pagination'
 import { IGenericResponse } from '../../../interfaces/common'
 import { paginationHelpers } from '../../../helpers/paginationHelper'
-import { SortOrder } from 'mongoose'
+import mongoose, { SortOrder } from 'mongoose'
 import { IStudentFilters, IUserStudent } from './student.interface'
 import { Student } from './student.model'
-import { User } from '../user/user.model';
+import { User } from '../user/user.model'
 import { studentSearchableFields } from './student.constant'
 import ApiError from '../../../error-handler/ApiError'
 import httpStatus from 'http-status'
@@ -116,41 +116,33 @@ const updateStudent = async (
 }
 
 const deleteStudent = async (id: string): Promise<IUserStudent | null> => {
-  const result = await Student.findOneAndDelete({ id })
-    .populate('semester')
-    .populate('faculty')
-    .populate('semester')
-  return result
-}
-
-const deleteStudent = async (id: string): Promise<IUserStudent | null> => {
   // check if the student is exist
-  const isExist = await Student.findOne({ id });
+  const isExist = await Student.findOne({ id })
 
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Student not found !');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Student not found !')
   }
 
-  const session = await mongoose.startSession();
+  const session = await mongoose.startSession()
 
   try {
-    session.startTransaction();
+    session.startTransaction()
     //delete student first
-    const student = await Student.findOneAndDelete({ id }, { session });
+    const student = await Student.findOneAndDelete({ id }, { session })
     if (!student) {
-      throw new ApiError(404, 'Failed to delete student');
+      throw new ApiError(404, 'Failed to delete student')
     }
     //delete user
-    await User.deleteOne({ id });
-    session.commitTransaction();
-    session.endSession();
+    await User.deleteOne({ id })
+    session.commitTransaction()
+    session.endSession()
 
-    return student;
+    return student
   } catch (error) {
-    session.abortTransaction();
-    throw error;
+    session.abortTransaction()
+    throw error
   }
-};
+}
 
 export const StudentService = {
   getAllStudents,
