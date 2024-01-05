@@ -2,6 +2,7 @@ import app from './app'
 import config from './config'
 import { logger, errorlogger } from './shared/logger'
 import { Server } from 'http'
+import { RedisClient } from './shared/redis'
 
 process.on('uncaughtException', error => {
   errorlogger.error(error)
@@ -12,6 +13,7 @@ let server: Server
 
 const startServer = async (): Promise<void> => {
   try {
+    await RedisClient.connect()
     server = app.listen(config.port, () => {
       logger.info(`server is running on port ${config.port}`)
     })
