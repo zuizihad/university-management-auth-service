@@ -4,7 +4,11 @@ import {
   semesterSearchableFields,
   semesterTitleCodeMapper,
 } from './semester.constant'
-import { ISemester, ISemesterFilters } from './semester.interface'
+import {
+  IAcademicSemesterCreatedEvent,
+  ISemester,
+  ISemesterFilters,
+} from './semester.interface'
 import { Semester } from './semester.model'
 import { IPaginateOptions } from '../../../interfaces/pagination'
 import { IGenericResponse } from '../../../interfaces/common'
@@ -124,10 +128,53 @@ const deleteSemester = async (id: string): Promise<ISemester | null> => {
   return result
 }
 
+const createSemesterFromEvent = async (
+  e: IAcademicSemesterCreatedEvent
+): Promise<void> => {
+  await Semester.create({
+    title: e.title,
+    year: e.year,
+    code: e.code,
+    startMonth: e.startMonth,
+    endMonth: e.endMonth,
+    syncId: e.id,
+  })
+}
+
+const updateSemesterFromEvent = async (
+  e: IAcademicSemesterCreatedEvent
+): Promise<void> => {
+  await Semester.findOneAndUpdate(
+    {
+      syncId: e.id,
+    },
+    {
+      $set: {
+        title: e.title,
+        year: e.year,
+        code: e.code,
+        startMonth: e.startMonth,
+        endMonth: e.endMonth,
+      },
+    }
+  )
+}
+
+const deleteSemesterFromEvent = async (
+  e: IAcademicSemesterCreatedEvent
+): Promise<void> => {
+  await Semester.findOneAndDelete({
+    syncId: e.id,
+  })
+}
+
 export const SemesterService = {
   createSemester,
   getSemesters,
   getSingleSemester,
   updateSemester,
   deleteSemester,
+  createSemesterFromEvent,
+  updateSemesterFromEvent,
+  deleteSemesterFromEvent,
 }

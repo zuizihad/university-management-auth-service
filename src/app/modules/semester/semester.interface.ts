@@ -19,10 +19,20 @@ export type ISemesterCodes = '01' | '02' | '03'
 
 export type ISemester = {
   title: ISemesterTitles
-  year: string
+  year: number
   code: ISemesterCodes
   startMonth: ISemesterMonths
   endMonth: ISemesterMonths
+  syncId: string
+}
+
+export type IAcademicSemesterCreatedEvent = {
+  title: string
+  year: number
+  code: string
+  startMonth: string
+  endMonth: string
+  id: string
 }
 
 export type SemesterModel = Model<ISemester>

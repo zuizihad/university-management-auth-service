@@ -3,6 +3,7 @@ import config from './config'
 import { logger, errorlogger } from './shared/logger'
 import { Server } from 'http'
 import { RedisClient } from './shared/redis'
+import subscribeToEvents from './app/events'
 
 process.on('uncaughtException', error => {
   errorlogger.error(error)
@@ -13,7 +14,9 @@ let server: Server
 
 const startServer = async (): Promise<void> => {
   try {
-    await RedisClient.connect()
+    await RedisClient.connect().then(() => {
+      subscribeToEvents()
+    })
     server = app.listen(config.port, () => {
       logger.info(`server is running on port ${config.port}`)
     })
