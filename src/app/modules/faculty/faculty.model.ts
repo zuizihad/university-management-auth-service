@@ -9,6 +9,10 @@ const facultySchema = new Schema<IFaculty>(
       trim: true,
       unique: true,
     },
+    syncId: {
+      type: String,
+      required: true,
+    }
   },
   {
     timestamps: true,

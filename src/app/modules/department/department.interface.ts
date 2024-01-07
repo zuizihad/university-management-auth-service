@@ -3,19 +3,20 @@ import { IFaculty } from '../faculty/faculty.interface'
 
 export type IDepartment = {
   title: string
-  faculty: Types.ObjectId | IFaculty
+  academicFaculty: Types.ObjectId | IFaculty
+  syncId: string
 }
 
 export type IFacultyFilters = {
   searchTerm?: string
-  faculty?: Types.ObjectId
+  academicFaculty?: Types.ObjectId
 }
 
 export type DepartmentModel = Model<IDepartment, object>
 
 export type IDepartmentFilters = {
   searchTerm?: string
-  faculty?: Types.ObjectId
+  academicFaculty?: Types.ObjectId
 }
 
 export type AcademicDepartmentCreatedEvent = {

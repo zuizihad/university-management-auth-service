@@ -2,6 +2,7 @@ import { Model } from 'mongoose'
 
 export type IFaculty = {
   title: string
+  syncId: string
 }
 
 export type IFacultyFilters = {

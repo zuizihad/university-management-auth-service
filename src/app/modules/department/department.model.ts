@@ -9,11 +9,15 @@ const departmentSchema = new Schema<IDepartment>(
       trim: true,
       unique: true,
     },
-    faculty: {
+    academicFaculty: {
       type: Schema.Types.ObjectId,
       ref: 'Faculty',
       required: true,
     },
+    syncId: {
+      type: String,
+      required: true,
+    }
   },
   {
     timestamps: true,
