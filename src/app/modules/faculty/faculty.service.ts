@@ -2,7 +2,7 @@ import { SortOrder } from 'mongoose'
 import { paginationHelpers } from '../../../helpers/paginationHelper'
 import { IPaginateOptions } from '../../../interfaces/pagination'
 import { facultySearchableFields } from './faculty.constants'
-import { IFaculty, IFacultyFilters } from './faculty.interface'
+import { AcademicFacultyCreatedEvent, AcademicFacultyUpdatedEvent, IFaculty, IFacultyFilters } from './faculty.interface'
 import { Faculty } from './faculty.model'
 import { IGenericResponse } from '../../../interfaces/common'
 
@@ -86,10 +86,36 @@ const deleteFaculty = async (id: string): Promise<IFaculty | null> => {
   return result
 }
 
+const insertIntoDBFromEvent = async (e: AcademicFacultyCreatedEvent): Promise<void> => {
+  await Faculty.create({
+    syncId: e.id,
+    title: e.title
+  });
+};
+
+const updateOneInDBFromEvent = async (e: AcademicFacultyUpdatedEvent): Promise<void> => {
+  await Faculty.findOneAndUpdate(
+    { syncId: e.id },
+    {
+      $set: {
+        title: e.title
+      }
+    }
+  );
+};
+
+const deleteOneFromDBFromEvent = async (syncId: string): Promise<void> => {
+  await Faculty.findOneAndDelete({ syncId });
+};
+
+
 export const FacultyService = {
   createFaculty,
   getAllFaculty,
   getSingleFaculty,
   updateFaculty,
   deleteFaculty,
+  insertIntoDBFromEvent,
+  updateOneInDBFromEvent,
+  deleteOneFromDBFromEvent
 }

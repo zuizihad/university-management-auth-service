@@ -9,3 +9,17 @@ export type IFacultyFilters = {
 }
 
 export type FacultyModel = Model<IFaculty>
+
+export type AcademicFacultyCreatedEvent = {
+  id: string;
+  title: string;
+};
+
+export type AcademicFacultyUpdatedEvent = {
+  id: string;
+  title: string;
+};
+
+export type AcademicFacultyDeletedEvent = {
+  id: string;
+};
