@@ -52,7 +52,7 @@ const getAllDepartments = async (
     andConditions.length > 0 ? { $and: andConditions } : {}
 
   const result = await Department.find(whereConditions)
-    .populate('faculty')
+    .populate('academicFaculty')
     .sort(sortConditions)
     .skip(skip)
     .limit(limit)

@@ -17,6 +17,8 @@ import { UserFaculty } from '../user-faculty/user-faculty.model'
 import { IAdmin } from '../admin/admin.interface'
 import { Admin } from '../admin/admin.model'
 import bcrypt from 'bcrypt'
+import { RedisClient } from '../../../shared/redis'
+import { EVENT_STUDENT_CREATED } from './user.constant'
 
 const createStudent = async (
   student: IUserStudent,
@@ -86,6 +88,11 @@ const createStudent = async (
       ],
     })
   }
+
+  if(newUserAllData) {
+    await RedisClient.publish(EVENT_STUDENT_CREATED, JSON.stringify(newUserAllData.student))
+  }
+
   return newUserAllData
 }
 
