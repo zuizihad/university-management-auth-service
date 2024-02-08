@@ -1,6 +1,6 @@
 import { Model, Types } from 'mongoose'
-import { IFaculty } from '../faculty/faculty.interface'
-import { IDepartment } from '../department/department.interface'
+import { IFaculty } from '../academicFaculty/faculty.interface'
+import { IDepartment } from '../academicDepartment/department.interface'
 
 export type UserName = {
   firstName: string

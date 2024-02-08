@@ -12,7 +12,7 @@ const facultySchema = new Schema<IFaculty>(
     syncId: {
       type: String,
       required: true,
-    }
+    },
   },
   {
     timestamps: true,

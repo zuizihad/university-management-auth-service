@@ -11,6 +11,11 @@ import { JwtPayload, Secret } from 'jsonwebtoken'
 import config from '../../../config'
 import { JwtHelpers } from '../../../helpers/jwtHelpers'
 import bcrypt from 'bcrypt'
+import { ENUM_USER_ROLE } from '../../../enums/user'
+import { Admin } from '../admin/admin.model'
+import { Faculty } from '../academicFaculty/faculty.model'
+import { Student } from '../student/student.model'
+import { sendEmail } from './sendResetEmail'
 
 const login = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const { id, password } = payload
@@ -106,8 +111,86 @@ const changePassword = async (
   await User.findOneAndUpdate({ id: data.userId }, updatedData)
 }
 
+const forgotPass = async (payload: { id: string }) => {
+  const user = await User.findOne({ id: payload.id }, { id: 1, role: 1 })
+
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User does not exist!')
+  }
+
+  let profile = null
+  if (user.role === ENUM_USER_ROLE.ADMIN) {
+    profile = await Admin.findOne({ id: user.id })
+  } else if (user.role === ENUM_USER_ROLE.FACULTY) {
+    profile = await Faculty.findOne({ id: user.id })
+  } else if (user.role === ENUM_USER_ROLE.STUDENT) {
+    profile = await Student.findOne({ id: user.id })
+  }
+
+  if (!profile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Pofile not found!')
+  }
+
+  if (!profile.email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email not found!')
+  }
+
+  const passResetToken = await JwtHelpers.createResetToken(
+    { id: user.id },
+    config.jwt.secret as string,
+    '50m'
+  )
+
+  const resetLink: string = config.resetlink + `token=${passResetToken}`
+
+  await sendEmail(
+    profile.email,
+    `
+      <div>
+        <p>Hi, ${profile.name.firstName}</p>
+        <p>Your password reset link: <a href=${resetLink}>Click Here</a></p>
+        <p>Thank you</p>
+      </div>
+  `
+  )
+
+  // return {
+  //   message: "Check your email!"
+  // }
+}
+
+const resetPassword = async (
+  payload: { id: string; newPassword: string },
+  token: string
+) => {
+  const { id, newPassword } = payload
+  const user = await User.findOne({ id }, { id: 1 })
+
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User not found!')
+  }
+
+  const isVarified = await JwtHelpers.tokenVerify(
+    token,
+    config.jwt.secret as string
+  )
+
+  if (!isVarified) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User not found!')
+  }
+
+  const password = await bcrypt.hash(
+    newPassword,
+    Number(config.bcrypt_salt_rounds)
+  )
+
+  await User.updateOne({ id }, { password })
+}
+
 export const AuthService = {
   login,
   refreshToken,
   changePassword,
+  forgotPass,
+  resetPassword,
 }

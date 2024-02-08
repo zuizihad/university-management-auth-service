@@ -19,6 +19,7 @@
     "src/**/*.ts": "yarn lint-prettier"
   },
   "devDependencies": {
+    "@types/nodemailer": "^6.4.14",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
     "eslint": "^8.41.0",
@@ -44,6 +45,7 @@
     "http-status": "^1.6.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.2.1",
+    "nodemailer": "^6.9.9",
     "redis": "^4.6.12",
     "winston": "^3.9.0",
     "winston-daily-rotate-file": "^4.7.1",

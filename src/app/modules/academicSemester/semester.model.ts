@@ -37,7 +37,7 @@ const semesterSchema = new Schema<ISemester>(
     syncId: {
       type: String,
       required: true,
-    }
+    },
   },
   {
     timestamps: true,

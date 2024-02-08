@@ -17,7 +17,7 @@ const departmentSchema = new Schema<IDepartment>(
     syncId: {
       type: String,
       required: true,
-    }
+    },
   },
   {
     timestamps: true,

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import config from '../../../config'
 import ApiError from '../../../error-handler/ApiError'
-import { Semester } from '../semester/semester.model'
+import { Semester } from '../academicSemester/semester.model'
 import { IUserStudent } from '../student/student.interface'
 import { IUser } from './user.interface'
 import { User } from './user.model'
@@ -89,8 +89,11 @@ const createStudent = async (
     })
   }
 
-  if(newUserAllData) {
-    await RedisClient.publish(EVENT_STUDENT_CREATED, JSON.stringify(newUserAllData.student))
+  if (newUserAllData) {
+    await RedisClient.publish(
+      EVENT_STUDENT_CREATED,
+      JSON.stringify(newUserAllData.student)
+    )
   }
 
   return newUserAllData

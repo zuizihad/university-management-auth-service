@@ -10,7 +10,7 @@ import { IUserFaculty, IUserFacultyFilters } from './user-faculty.interface'
 
 import { IPaginateOptions } from '../../../interfaces/pagination'
 import { UserFaculty } from './user-faculty.model'
-import { facultySearchableFields } from '../faculty/faculty.constants'
+import { facultySearchableFields } from '../academicFaculty/faculty.constants'
 import ApiError from '../../../error-handler/ApiError'
 
 const getAllFaculties = async (

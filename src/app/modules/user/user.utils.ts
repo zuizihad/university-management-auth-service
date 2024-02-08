@@ -1,4 +1,4 @@
-import { ISemester } from '../semester/semester.interface'
+import { ISemester } from '../academicSemester/semester.interface'
 import { User } from './user.model'
 
 // generate student id
@@ -22,8 +22,7 @@ export const generateStudentId = async (semester: ISemester | null) => {
     (await findLastStudentId()) || (0).toString().padStart(5, '0')
   let incrementedId = (parseInt(currentId) + 1).toString().padStart(5, '0')
 
-  incrementedId = `${semester.year}${semester.code
-  }${incrementedId}`;
+  incrementedId = `${semester.year}${semester.code}${incrementedId}`
 
   return incrementedId
 }

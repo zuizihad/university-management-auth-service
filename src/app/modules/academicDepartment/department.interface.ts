@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose'
-import { IFaculty } from '../faculty/faculty.interface'
+import { IFaculty } from '../academicFaculty/faculty.interface'
 
 export type IDepartment = {
   title: string
@@ -20,17 +20,17 @@ export type IDepartmentFilters = {
 }
 
 export type AcademicDepartmentCreatedEvent = {
-  id: string;
-  title: string;
-  academicFacultyId: string;
-};
+  id: string
+  title: string
+  academicFacultyId: string
+}
 
 export type AcademicDepartmentUpdatedEvent = {
-  id: string;
-  title: string;
-  academicFacultyId: string;
-};
+  id: string
+  title: string
+  academicFacultyId: string
+}
 
 export type AcademicDepartmentDeletedEvent = {
-  id: string;
-};
+  id: string
+}
