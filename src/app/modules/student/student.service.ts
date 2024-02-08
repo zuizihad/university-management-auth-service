@@ -5,9 +5,13 @@ import mongoose, { SortOrder } from 'mongoose'
 import { IStudentFilters, IUserStudent } from './student.interface'
 import { Student } from './student.model'
 import { User } from '../user/user.model'
-import { studentSearchableFields } from './student.constant'
+import {
+  EVENT_STUDENT_UPDATED,
+  studentSearchableFields,
+} from './student.constant'
 import ApiError from '../../../error-handler/ApiError'
 import httpStatus from 'http-status'
+import { RedisClient } from '../../../shared/redis'
 
 const getAllStudents = async (
   filters: IStudentFilters,
@@ -111,6 +115,13 @@ const updateStudent = async (
   const result = await Student.findOneAndUpdate({ id }, updateStudentData, {
     new: true,
   })
+    .populate('faculty')
+    .populate('department')
+    .populate('semester')
+
+  if (result) {
+    await RedisClient.publish(EVENT_STUDENT_UPDATED, JSON.stringify(result))
+  }
 
   return result
 }

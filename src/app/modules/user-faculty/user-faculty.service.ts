@@ -12,6 +12,8 @@ import { IPaginateOptions } from '../../../interfaces/pagination'
 import { UserFaculty } from './user-faculty.model'
 import { facultySearchableFields } from '../academicFaculty/faculty.constants'
 import ApiError from '../../../error-handler/ApiError'
+import { RedisClient } from '../../../shared/redis'
+import { EVENT_FACULTY_UPDATED } from './user-faculty.constant'
 
 const getAllFaculties = async (
   filters: IUserFacultyFilters,
@@ -103,6 +105,12 @@ const updateFaculty = async (
       new: true,
     }
   )
+    .populate('faculty')
+    .populate('department')
+
+  if (result) {
+    await RedisClient.publish(EVENT_FACULTY_UPDATED, JSON.stringify(result))
+  }
   return result
 }
 
